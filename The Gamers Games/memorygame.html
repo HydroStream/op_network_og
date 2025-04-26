@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+    <title>Memory Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        @media (max-width: 768px) {
+    /* Mobile styles */
+    #yourElementId {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+        .memory-game {
+            width: 640px;
+            height: 640px;
+            display: flex;
+            flex-wrap: wrap;
+            perspective: 1000px;
+        }
+        .memory-card {
+            width: calc(25% - 10px);
+            height: calc(25% - 10px);
+            margin: 5px;
+            position: relative;
+            transform: scale(1);
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            cursor: pointer;
+        }
+        .memory-card:active {
+            transform: scale(0.97);
+            transition: transform 0.2s;
+        }
+        .memory-card.flip {
+            transform: rotateY(180deg);
+        }
+        .front-face, .back-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 5px;
+        }
+        .front-face {
+            background: white;
+        }
+        .back-face {
+            background: #1c7ccc;
+            transform: rotateY(180deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .back-face img {
+            width: 100px;
+            height: 100px;
+        }
+        .restart-button {
+            margin-top: 1px;
+            padding: 10px 20px;
+            background-color: #1c7ccc;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .restart-button:hover {
+            background-color: #155a9c;
+        }
+        .win-message {
+            display: none;
+            font-size: 24px;
+            margin-top: 20px;
+            color: #4CAF50;
+        }
+        #goBackButton {
+            position: absolute;
+            top: 500px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #1c7ccc;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #goBackButton:hover {
+            background-color: #155a9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="memory-game">
+        <div class="memory-card" data-framework="aurelia">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="flower_9591136.png" alt="Flower"></div>
+        </div>
+        <div class="memory-card" data-framework="aurelia">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="flower_9591136.png" alt="Flower"></div>
+        </div>
+        <div class="memory-card" data-framework="angular">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="Snake Game.jpg" alt="Snake"></div>
+        </div>
+        <div class="memory-card" data-framework="angular">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="Snake Game.jpg" alt="Snake"></div>
+        </div>
+        <div class="memory-card" data-framework="vue">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="smart-car_11808437.png" alt="Smart Car"></div>
+        </div>
+        <div class="memory-card" data-framework="vue">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="smart-car_11808437.png" alt="Smart Car"></div>
+        </div>
+        <div class="memory-card" data-framework="react">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="car_693934.png" alt="Car"></div>
+        </div>
+        <div class="memory-card" data-framework="react">
+            <div class="front-face"></div>
+            <div class="back-face"><img src="car_693934.png" alt="Car"></div>
+        </div>
+        <div class="win-message">You won!</div>
+    </div>
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
+    <button class="restart-button">Restart</button>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+
+    const cards = document.querySelectorAll('.memory-card');
+    const restartButton = document.querySelector('.restart-button');
+    const winMessage = document.querySelector('.win-message');
+
+    let hasFlippedCard = false;
+    let lockBoard = false;
+    let firstCard, secondCard;
+    let matchedPairs = 0;
+
+    function flipCard() {
+        if (lockBoard) return;
+        if (this === firstCard) return;
+
+        this.classList.add('flip');
+
+        if (!hasFlippedCard) {
+            hasFlippedCard = true;
+            firstCard = this;
+            return;
+        }
+
+        secondCard = this;
+        checkForMatch();
+    }
+
+    function checkForMatch() {
+        let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
+        isMatch ? disableCards() : unflipCards();
+    }
+
+    function disableCards() {
+        firstCard.removeEventListener('click', flipCard);
+        secondCard.removeEventListener('click', flipCard);
+
+        matchedPairs++;
+        if (matchedPairs === cards.length / 2) {
+            winMessage.style.display = 'block';
+        }
+
+        resetBoard();
+    }
+
+    function unflipCards() {
+        lockBoard = true;
+
+        setTimeout(() => {
+            firstCard.classList.remove('flip');
+            secondCard.classList.remove('flip');
+
+            resetBoard();
+        }, 1500);
+    }
+
+    function resetBoard() {
+        [hasFlippedCard, lockBoard] = [false, false];
+        [firstCard, secondCard] = [null, null];
+    }
+
+    (function shuffle() {
+        cards.forEach(card => {
+            let randomPos = Math.floor(Math.random() * 12);
+            card.style.order = randomPos;
+        });
+    })();
+
+    cards.forEach(card => card.addEventListener('click', flipCard));
+
+    restartButton.addEventListener('click', () => {
+        cards.forEach(card => card.classList.remove('flip'));
+        resetBoard();
+        matchedPairs = 0;
+        shuffle();
+        winMessage.style.display = 'none';
+    });
+
+    function goBack() {
+        window.history.back();
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+    <title>Endless Runner Game</title>
+<style>
+    body {
+    margin: 0;
+    overflow: hidden;
+    background-color: gray;
+}
+
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: #8cd3ff;
+    overflow: hidden;
+}
+@media (max-width: 768px) {
+    /* Mobile styles */
+    #yourElementId {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+#player {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    width: 50px;
+    height: 50px;
+    background-color: #ff5733;
+}
+
+#obstacle {
+    position: absolute;
+    bottom: 50px;
+    right: -50px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    animation: moveObstacle 2s linear infinite;
+}
+
+@keyframes moveObstacle {
+    0% {
+        right: -50px;
+    }
+    100% {
+        right: 100vw;
+    }
+}
+
+.board{
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+button{
+  background-color: black;
+  font-weight: bold;
+  color: white;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+    <div id="gameContainer">
+      <div class="board">
+        <button onclick="goBack()">Go Back</button>
+      </div>
+        <div id="player"></div>
+        <div id="obstacle"></div>
+    </div>
+    <script>
+            document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      // Set up the audio player state
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      // Restore audio state
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+document.addEventListener('DOMContentLoaded', (event) => {
+    const player = document.getElementById('player');
+    const gameContainer = document.getElementById('gameContainer');
+    const obstacle = document.getElementById('obstacle');
+    let jumping = false;
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !jumping) {
+            jump();
+        }
+    });
+
+    function jump() {
+        jumping = true;
+        let upInterval = setInterval(() => {
+            if (player.offsetTop <= 150) {
+                clearInterval(upInterval);
+                let downInterval = setInterval(() => {
+                    if (player.offsetTop >= gameContainer.clientHeight - player.clientHeight - 50) {
+                        clearInterval(downInterval);
+                        jumping = false;
+                    } else {
+                        player.style.top = `${player.offsetTop + 10}px`;
+                    }
+                }, 20);
+            } else {
+                player.style.top = `${player.offsetTop - 10}px`;
+            }
+        }, 20);
+    }
+
+    function checkCollision() {
+        const playerRect = player.getBoundingClientRect();
+        const obstacleRect = obstacle.getBoundingClientRect();
+
+        if (
+            playerRect.right > obstacleRect.left &&
+            playerRect.left < obstacleRect.right &&
+            playerRect.bottom > obstacleRect.top &&
+            playerRect.top < obstacleRect.bottom
+        ) {
+            alert('Game Over!');
+            location.reload();
+        }
+    }
+
+    setInterval(checkCollision, 10);
+});
+
+function goBack() {
+  window.location.href ='gamespage.html'
+}
+    </script>
+</body>
+</html>

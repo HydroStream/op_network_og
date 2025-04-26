@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+  <title>Geometry Dash</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    @media (max-width: 768px) {
+      /* Mobile styles */
+      #yourElementId {
+        width: 100%;
+        padding: 10px;
+      }
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background-color: #87CEEB;
+    }
+
+    #scoreboard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-size: 20px;
+      z-index: 2;
+    }
+
+    #controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+
+    #go-back-button, #restart-button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    #go-back-button:hover, #restart-button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="scoreboard">Score: 0</div>
+<div id="controls">
+  <button id="go-back-button" onclick="goBack()">Go Back</button>
+  <button id="restart-button" onclick="restartGame()">Restart</button>
+</div>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const context = canvas.getContext('2d');
+
+  const player = {
+    x: 50,
+    y: canvas.height - 60,
+    width: 40,
+    height: 40,
+    color: 'red',
+    gravity: 0.5,
+    velocity: 0,
+    jumpPower: -10,
+    isJumping: false,
+  };
+
+  const obstacles = [];
+  const obstacleWidth = 50;
+  const obstacleHeight = 50;
+  const obstacleSpeed = 5;
+
+  let score = 0;
+  let isGameOver = false;
+
+  function drawPlayer() {
+    context.fillStyle = player.color;
+    context.fillRect(player.x, player.y, player.width, player.height);
+  }
+
+  function drawObstacles() {
+    context.fillStyle = 'green';
+    obstacles.forEach(obstacle => {
+      context.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+    });
+  }
+
+  function updatePlayer() {
+    if (player.isJumping) {
+      player.velocity = player.jumpPower;
+      player.isJumping = false;
+    }
+    player.velocity += player.gravity;
+    player.y += player.velocity;
+
+    if (player.y + player.height > canvas.height) {
+      player.y = canvas.height - player.height;
+      player.velocity = 0;
+    }
+
+    if (player.y < 0) {
+      player.y = 0;
+      player.velocity = 0;
+    }
+  }
+
+  function updateObstacles() {
+    obstacles.forEach(obstacle => {
+      obstacle.x -= obstacleSpeed;
+
+      if (obstacle.x + obstacleWidth < 0) {
+        obstacles.shift();
+        score++;
+      }
+
+      // Collision detection
+      if (
+        player.x < obstacle.x + obstacleWidth &&
+        player.x + player.width > obstacle.x &&
+        player.y < obstacle.y + obstacleHeight &&
+        player.y + player.height > obstacle.y
+      ) {
+        isGameOver = true;
+      }
+    });
+
+    // Add new obstacles
+    if (Math.random() < 0.02) {
+      const obstacleY = Math.random() * (canvas.height - obstacleHeight);
+      obstacles.push({ x: canvas.width, y: obstacleY });
+    }
+  }
+
+  function drawScore() {
+    document.getElementById('scoreboard').innerText = `Score: ${score}`;
+  }
+
+  function gameLoop() {
+    if (isGameOver) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = 'white';
+      context.font = '30px Arial';
+      context.fillText('Game Over!', canvas.width / 2 - 80, canvas.height / 2);
+      return;
+    }
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    drawPlayer();
+    drawObstacles();
+    updatePlayer();
+    updateObstacles();
+    drawScore();
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  function restartGame() {
+    // Reset game state
+    cancelAnimationFrame(gameLoop);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    player.y = canvas.height - 60;
+    player.velocity = 0;
+    player.isJumping = false;
+    obstacles.length = 0;
+    score = 0;
+    isGameOver = false;
+    gameLoop();
+  }
+
+  function goBack() {
+    window.history.back();
+  }
+
+  function jump() {
+    player.isJumping = true;
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+      jump();
+    }
+  });
+
+  document.addEventListener('touchstart', (event) => {
+    event.preventDefault(); // Prevents the default touch behavior
+    jump();
+  });
+
+  gameLoop();
+</script>
+</body>
+</html>

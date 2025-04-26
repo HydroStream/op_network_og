@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+    <title>Math Quiz Game</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    background-color: gray;
+}
+@media (max-width: 768px) {
+    /* Mobile styles */
+    #yourElementId {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#questionContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#question {
+    font-size: 1.5em;
+}
+
+#answer {
+    padding: 10px;
+    font-size: 1em;
+    width: 100px;
+    margin: 10px 0;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#feedback {
+    margin-top: 10px;
+    font-size: 1em;
+    color: red;
+}
+
+#goBackButton {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #1c7ccc;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#goBackButton:hover {
+    background-color: #155a9c;
+}
+</style>
+</head>
+<body>
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
+    <div id="gameContainer">
+        <h1>Math Quiz Game</h1>
+        <div id="questionContainer">
+            <p id="question"></p>
+            <input type="text" id="answer" placeholder="Your answer">
+            <button onclick="checkAnswer()">Submit</button>
+            <p id="feedback"></p>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const username = localStorage.getItem('username');
+        const avatarURL = localStorage.getItem('avatar');
+        const userInfo = document.getElementById('user-info');
+
+        if (username) {
+            userInfo.innerHTML = `
+            <div class="user-info" onclick="toggleDropdown()">
+                ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+                <span>${username}</span>
+                <div class="dropdown" id="dropdown-menu">
+                <a href="#" onclick="logout()">Sign Out</a>
+                <a href="loginpage.html">Add Another User</a>
+                </div>
+            </div>
+            `;
+        } else {
+            userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+        }
+
+        const audioElements = document.querySelectorAll('audio');
+        audioElements.forEach(audio => {
+            audio.addEventListener('play', () => {
+                localStorage.setItem('audioSrc', audio.src);
+                localStorage.setItem('audioCurrentTime', audio.currentTime);
+            });
+        });
+
+        const savedAudioSrc = localStorage.getItem('audioSrc');
+        const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+        if (savedAudioSrc) {
+            audioElements.forEach(audio => {
+                if (audio.src === savedAudioSrc) {
+                    audio.currentTime = savedAudioCurrentTime;
+                    audio.play();
+                }
+            });
+        }
+    });
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById('dropdown-menu');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+        localStorage.removeItem('username');
+        localStorage.removeItem('avatar');
+        localStorage.removeItem('audioSrc');
+        localStorage.removeItem('audioCurrentTime');
+        window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.user-info')) {
+            const dropdown = document.getElementById('dropdown-menu');
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            }
+        }
+    }
+
+    const questions = [
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 x 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+        { question: "788 - 80", answer: "708" },
+        { question: "The ratio of boys to girls in a school is 4:5. If there are 125 girls, how many boys are there?", answer: "100" },
+        { question: "48 x 27", answer: "1296" },
+        { question: "16 / 4", answer: "4" },
+        { question: "16 / 4", answer: "4" },
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 * 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+        { question: "16 / 4", answer: "4" },
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 * 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+        { question: "16 / 4", answer: "4" },
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 * 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+        { question: "16 / 4", answer: "4" },
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 * 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+        { question: "16 / 4", answer: "4" },
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 * 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+        { question: "16 / 4", answer: "4" },
+        { question: "5 + 3", answer: "8" },
+        { question: "12 - 4", answer: "8" },
+        { question: "3 * 7", answer: "21" },
+        { question: "16 / 4", answer: "4" },
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function loadQuestion() {
+        const questionElement = document.getElementById('question');
+        const answerElement = document.getElementById('answer');
+        const feedbackElement = document.getElementById('feedback');
+
+        questionElement.textContent = questions[currentQuestionIndex].question;
+        answerElement.value = '';
+        feedbackElement.textContent = '';
+    }
+
+    function checkAnswer() {
+        const answerElement = document.getElementById('answer');
+        const feedbackElement = document.getElementById('feedback');
+
+        if (answerElement.value === questions[currentQuestionIndex].answer) {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                feedbackElement.textContent = "Congratulations! You've completed the quiz.";
+                feedbackElement.style.color = 'green';
+            }
+        } else {
+            feedbackElement.textContent = "Incorrect! Please try again.";
+            feedbackElement.style.color = 'red';
+        }
+    }
+
+    window.onload = function() {
+        loadQuestion();
+    };
+
+    function goBack() {
+        window.history.back();
+    }
+    </script>
+</body>
+</html>

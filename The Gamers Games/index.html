@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+  <title>The Gamers Games | Home</title>
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="index.html">The Gamers Games</a></li>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gamespage.html">All Games</a></li>
+      <li><a href="quizandpuzzlegames.html">Quiz and Puzzle Games</a></li>
+      <li><a href="aboutpage.html">About</a></li>
+      <li><a href="signupform.html">Sign Up Form</a></li>
+      <li><a href="retromusic.html">Retro Music</a></li>
+    </ul>
+    <span id="user-info"></span>
+  </nav>
+  <div class="content">
+    <h1>Popular Games:</h1>
+    <a href="Snake Game.html">
+      <img src="Snake Game.jpg" alt="Snake Game">
+    </a>
+    <a href="Tetris.html">
+      <img src="download.jfif" alt="Tetris">
+    </a>
+    <a href="runnergame.html">
+      <img src="peskynoxioussigns.png" alt="Runner Game">
+    </a>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a><br>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      // Set up the audio player state
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      // Restore audio state
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      // const dropdown = document.getElementById('dropdown-menu');
+      // dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+
+      const button = document.querySelector('.user-info');
+      const dropdown = document.querySelector('.dropdown');
+
+      button.onclick = function(){
+        dropdown.classList.toggle('open');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

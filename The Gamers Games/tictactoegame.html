@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+    <style>
+        body{
+            background-color: gray;
+        }
+        .game-container {
+            width: 600px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+
+        .cell {
+            background-color: #f0f0f0;
+            padding: 40px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 36px;
+        }
+        @media (max-width: 768px) {
+    /* Mobile styles */
+    #yourElementId {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+
+        .cell.x {
+            background-color: blue;
+            color: #fff;
+        }
+
+        .cell.o {
+            background-color: red;
+            color: #fff;
+        }
+
+        .new-game {
+            margin-top: 20px;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .new-game:hover {
+            background-color: #3e8e41;
+        }
+
+        .turn {
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        button{
+      background-color: #3e8e41;
+  font-weight: bold;
+  color: white;
+  padding: 20px;
+  align-items: center;
+  text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button onclick="goBack()">Go Back</button>
+    <div class="game-container">
+        <div class="grid">
+            <div class="cell" id="cell-0"></div>
+            <div class="cell" id="cell-1"></div>
+            <div class="cell" id="cell-2"></div>
+            <div class="cell" id="cell-3"></div>
+            <div class="cell" id="cell-4"></div>
+            <div class="cell" id="cell-5"></div>
+            <div class="cell" id="cell-6"></div>
+            <div class="cell" id="cell-7"></div>
+            <div class="cell" id="cell-8"></div>
+        </div>
+        <button class="new-game">New Game</button>
+        <p class="turn">Turn: X</p>
+
+        <script>
+          
+                document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      // Set up the audio player state
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      // Restore audio state
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+            let gameBoard = [];
+            let currentPlayer = 'X';
+            let gameOver = false;
+
+            // Initialize game board
+            for (let i = 0; i < 9; i++) {
+                gameBoard.push('');
+                document.getElementById(`cell-${i}`).addEventListener('click', handleCellClick);
+            }
+
+            // Handle cell click
+            function handleCellClick(event) {
+                if (gameOver) return;
+                const cellIndex = event.target.id.split('-')[1];
+                if (gameBoard[cellIndex] === '') {
+                    gameBoard[cellIndex] = currentPlayer;
+                    event.target.classList.add(currentPlayer.toLowerCase());
+                    checkWin();
+                    currentPlayer = currentPlayer === 'X'? 'O' : 'X';
+                    document.querySelector('.turn').innerHTML = `Turn: ${currentPlayer}`;
+                }
+            }
+
+            // Check for win
+            function checkWin() {
+                const winConditions = [
+                    [0, 1, 2],
+                    [3, 4, 5],
+                    [6, 7, 8],
+                    [0, 3, 6],
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [0, 4, 8],
+                    [2, 4, 6]
+                ];
+
+                for (let i = 0; i < winConditions.length; i++) {
+                    const condition = winConditions[i];
+                    if (gameBoard[condition[0]] === gameBoard[condition[1]] && gameBoard[condition[1]] === gameBoard[condition[2]] && gameBoard[condition[0]]!== '') {
+                        gameOver = true;
+                        alert(`Player ${gameBoard[condition[0]]} wins!`);
+                        return;
+                    }
+                }
+
+                if (!gameBoard.includes('')) {
+                    gameOver = true;
+                    alert('It\'s a draw!');
+                }
+            }
+
+            // New game button click
+            document.querySelector('.new-game').addEventListener('click', newGame);
+
+            // New game function
+            function newGame() {
+                gameBoard = [];
+                currentPlayer = 'X';
+                gameOver = false;
+                document.querySelector('.turn').innerHTML = `Turn: ${currentPlayer}`;
+                for (let i = 0; i < 9; i++) {
+                    document.getElementById(`cell-${i}`).classList.remove('x', 'o');
+                    gameBoard.push('');
+                }
+            }
+
+            function goBack() {
+              window.location.href ='gamespage.html'
+            }
+        </script>
+    </div>
+</body>
+</html>

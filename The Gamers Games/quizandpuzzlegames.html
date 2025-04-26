@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+  <title>The Gamers Games | Quiz and Puzzle Games</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: gray;
+}
+
+.navbar {
+      background-color: #333;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px;
+    }
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.navbar ul li {
+  float: left;
+}
+
+.navbar ul li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+}
+
+.navbar ul li a:hover {
+  padding: 30px;
+  background-color: #555;
+}
+
+.navbar button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      cursor: pointer;
+    }
+
+    .navbar button a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .navbar button:hover {
+      background-color: #555;
+      padding: 30px;
+    }
+
+    .content {
+      padding: 20px;
+    }
+    img{
+      width: 20%;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      color: white;
+      position: relative;
+      cursor: pointer;
+    }
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      z-index: 1;
+    }
+    .dropdown a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: black;
+    }
+    .dropdown a:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+        <li><a href="index.html">The Gamers Games</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gamespage.html">All Games</a></li>
+        <li><a href="quizandpuzzlegames.html">Quiz and Puzzle Games</a></li>
+        <li><a href="aboutpage.html">About</a></li>
+        <li><a href="signupform.html">Sign Up Form</a></li>
+        <li><a href="retromusic.html">Retro Music</a></li>
+    </ul>
+    <span id="user-info"></span>
+</nav>
+
+  <div class="content">
+<br>
+<a href="Tetris.html">
+  <img src="download.jfif" alt="Tetris">
+</a>
+
+<a href="quizgame.html">
+  <img src="download (1).jfif" alt="Quiz Game">
+</a>
+
+<a href="mathquizgame.html">
+  <img src="download.png" alt="Math Quiz Game">
+</a>
+  </div>
+  <script>
+        document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      // Set up the audio player state
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      // Restore audio state
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span> ${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

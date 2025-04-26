@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: gray;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .navbar {
+            background-color: #333;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .navbar ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar ul li {
+            float: left;
+        }
+
+        .navbar ul li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar ul li a:hover {
+  padding: 30px;
+  background-color: #555;
+}
+
+        .navbar button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            cursor: pointer;
+        }
+
+        .navbar button a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar button:hover {
+            background-color: #555;
+            padding: 30px;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+          <li><a href="index.html">The Gamers Games</a></li>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="gamespage.html">All Games</a></li>
+          <li><a href="quizandpuzzlegames.html">Quiz and Puzzle Games</a></li>
+          <li><a href="aboutpage.html">About</a></li>
+          <li><a href="signupform.html">Sign Up Form</a></li>
+          <li><a href="retromusic.html">Retro Music</a></li>
+        </ul>
+        <span id="user-info"></span>
+      </nav>
+    <div class="container">
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <input type="file" id="avatar-upload" accept="image/*" required>
+        <p>Please Upload an Image/Avatar or else signing out will not be possible.</p>
+        <br>
+        <p>Dont have an account?<a href="signupform.html">Sign Up.</a></p>
+        <br>
+        <a href="forgotpassword.html">Forgot Your Password?</a>
+        <button onclick="login()">Login</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      // Set up the audio player state
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      // Restore audio state
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+        const users = {
+            'Admins Account': 'admin',
+            'Abdullah': 'Abdullah2012',
+            'Jalal': 'Jaltech.',
+            'edmund.eberhard': '123456',
+            ' ': '',
+            ' ': '',
+            '': '',
+            '': '',
+            ' ': '',
+            ' ': '',
+            ' ': '',
+            '': ''
+        };
+
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const avatarUpload = document.getElementById('avatar-upload');
+            const message = document.getElementById('message');
+
+            if (users[username] && users[username] === password) {
+                if (avatarUpload.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const avatarURL = e.target.result;
+                        localStorage.setItem('username', username);
+                        localStorage.setItem('avatar', avatarURL);
+                        message.style.color = 'green';
+                        message.innerText = 'Login successful. Loading....';
+                        setTimeout(() => {
+                            window.location.href = 'index.html'; 
+                        }, 1000);
+                    };
+                    reader.readAsDataURL(avatarUpload.files[0]);
+                } else {
+                    localStorage.setItem('username', username);
+                    localStorage.removeItem('avatar'); 
+                    message.style.color = 'green';
+                    message.innerText = 'Login successful. Please Wait....';
+                    setTimeout(() => {
+                        window.location.href = 'index.html'; 
+                    }, 1000);
+                }
+            } else {
+                message.style.color = 'red';
+                message.innerText = 'Invalid username or password';
+            }
+        }
+        // Function to update the last active time of the current user
+function updateLastActive() {
+    const username = localStorage.getItem('username');
+    if (username) {
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        users[username] = { ...users[username], lastActive: Date.now() };
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+}
+
+// Call this function on login and any other activity
+updateLastActive();
+
+    </script>
+</body>
+</html>

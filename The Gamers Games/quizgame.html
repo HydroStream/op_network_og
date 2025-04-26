@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Logo- game web.jpg" type="image/x-icon">
+    <title>Quiz Game</title>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: gray;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #fff; /* White container background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+@media (max-width: 768px) {
+    /* Mobile styles */
+    #yourElementId {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+h1 {
+    color: #333;
+}
+
+#quiz {
+    margin-top: 20px;
+}
+
+#question-container {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+</style>
+</head>
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
+    <div class="container">
+        <h1>Quiz Game</h1>
+        <div id="quiz">
+            <div id="question-container">
+                <p id="question"></p>
+                <input type="text" id="answer" placeholder="Type your answer">
+            </div>
+            <button id="submit-btn">Submit Answer</button>
+            <button id="next-btn" style="display:none;">Next Question</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username');
+      const avatarURL = localStorage.getItem('avatar');
+      const userInfo = document.getElementById('user-info');
+
+      if (username) {
+        userInfo.innerHTML = `
+          <div class="user-info" onclick="toggleDropdown()">
+            ${avatarURL ? `<img src="${avatarURL}" class="avatar" alt="Avatar">` : ''}
+            <span>${username}</span>
+            <div class="dropdown" id="dropdown-menu">
+              <a href="#" onclick="logout()">Sign Out</a>
+              <a href="loginpage.html">Add Another User</a>
+            </div>
+          </div>
+        `;
+      } else {
+        userInfo.innerHTML = `<button><a href="loginpage.html">Login/Sign Up</a></button>`;
+      }
+
+      // Set up the audio player state
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.addEventListener('play', () => {
+          localStorage.setItem('audioSrc', audio.src);
+          localStorage.setItem('audioCurrentTime', audio.currentTime);
+        });
+      });
+
+      // Restore audio state
+      const savedAudioSrc = localStorage.getItem('audioSrc');
+      const savedAudioCurrentTime = localStorage.getItem('audioCurrentTime');
+      if (savedAudioSrc) {
+        audioElements.forEach(audio => {
+          if (audio.src === savedAudioSrc) {
+            audio.currentTime = savedAudioCurrentTime;
+            audio.play();
+          }
+        });
+      }
+    });
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
+      localStorage.removeItem('audioSrc');
+      localStorage.removeItem('audioCurrentTime');
+      window.location.href = 'loginpage.html';
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-info')) {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+       const quizData = [
+    {
+        question: "What is the capital of France?",
+        answer: "Paris"
+    },
+    {
+        question: "Which planet is known as the Red Planet?",
+        answer: "Mars"
+    },
+    {
+        question: "Who discovered Gravity?",
+        answer: "Isaac Newton"
+    },
+    {
+        question: "If we minus 712 from 1500, how much do we get?",
+        answer: "788"
+    },
+    {
+        question: "If Becky has 7 apples and gives 2 away, how many apples does she have left?",
+        answer: "5"
+    },
+    {
+        question: "What is Physics?",
+        answer: "Is the study of matter in relation to energy"
+    },
+    {
+        question: "What can run but never walks, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?",
+        answer: "River"
+    },
+    {
+        question: "I am easy to lift, but hard to throw. What am I?",
+        answer: "Feather"
+    },
+    {
+        question: "What has 13 hearts, but no other organs?",
+        answer: "A deck of playing cards"
+    },
+    {
+        question: "What is the chemical symbol for the element with atomic number 79?",
+        answer: "Au"
+    },
+    {
+        question: "Who was the first President of the United States?",
+        answer: "George Washington"
+    },
+    {
+        question: "In which programming languages is the syntax for (int i = 0; i < 10; i++) commonly used?",
+        answer: "C, C++, Java"
+    },
+    {
+        question: "What is the longest river in the world when measured from source to mouth?",
+        answer: "The Nile River"
+    },
+    
+];
+
+const quizContainer = document.getElementById('quiz');
+const questionElement = document.getElementById('question');
+const answerInput = document.getElementById('answer');
+const submitButton = document.getElementById('submit-btn');
+const nextButton = document.getElementById('next-btn');
+const resultElement = document.getElementById('result');
+
+let currentQuestionIndex = 0;
+let score = 0;
+
+function loadQuestion() {
+    const currentQuestion = quizData[currentQuestionIndex];
+    questionElement.textContent = currentQuestion.question;
+    answerInput.value = ''; // Clear answer input
+}
+
+function checkAnswer() {
+    const userAnswer = answerInput.value.trim().toLowerCase();
+    const currentQuestion = quizData[currentQuestionIndex];
+    
+    if (userAnswer === currentQuestion.answer.toLowerCase()) {
+        score++;
+        resultElement.textContent = "Correct!";
+    } else {
+        resultElement.textContent = "Wrong!";
+    }
+
+    submitButton.disabled = true;
+    nextButton.style.display = 'inline-block';
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+    resultElement.textContent = '';
+    if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+        submitButton.disabled = false;
+        nextButton.style.display = 'none';
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    quizContainer.innerHTML = `<h2>Your Score: ${score} out of ${quizData.length}</h2>`;
+}
+
+submitButton.addEventListener('click', checkAnswer);
+nextButton.addEventListener('click', nextQuestion);
+
+loadQuestion();
+
+function goBack() {
+        window.history.back();
+    }
+    </script>
+</body>
+</html>

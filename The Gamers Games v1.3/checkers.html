@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="Assets/Logo.jpg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkers Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e1e;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            gap: 0;
+            border: 5px solid black;
+        }
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .black-square {
+            background-color: #333;
+        }
+        .red-square {
+            background-color: #eee;
+        }
+        .piece {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+        .black-piece {
+            background-color: black;
+        }
+        .red-piece {
+            background-color: red;
+        }
+        .selected {
+            outline: 3px solid yellow;
+        }
+    </style>
+</head>
+<body>
+
+<div class="board" id="board"></div>
+
+<script>
+    const boardElement = document.getElementById("board");
+
+    // Initialize board
+    const board = [];
+    const rows = 8;
+    const cols = 8;
+
+    // Create the board grid and initialize pieces
+    function createBoard() {
+        for (let row = 0; row < rows; row++) {
+            let rowArray = [];
+            for (let col = 0; col < cols; col++) {
+                const square = document.createElement('div');
+                square.classList.add('square');
+
+                // Alternate black and red squares
+                if ((row + col) % 2 === 0) {
+                    square.classList.add('red-square');
+                } else {
+                    square.classList.add('black-square');
+                }
+
+                // Place pieces for red and black players
+                if (row < 3 && (row + col) % 2 !== 0) {
+                    const piece = document.createElement('div');
+                    piece.classList.add('piece', 'red-piece');
+                    piece.setAttribute('data-row', row);
+                    piece.setAttribute('data-col', col);
+                    square.appendChild(piece);
+                } else if (row > 4 && (row + col) % 2 !== 0) {
+                    const piece = document.createElement('div');
+                    piece.classList.add('piece', 'black-piece');
+                    piece.setAttribute('data-row', row);
+                    piece.setAttribute('data-col', col);
+                    square.appendChild(piece);
+                }
+
+                rowArray.push(square);
+                boardElement.appendChild(square);
+            }
+            board.push(rowArray);
+        }
+    }
+
+    let selectedPiece = null;
+
+    // Select a piece to move
+    function selectPiece(event) {
+        const target = event.target;
+
+        if (target.classList.contains('piece')) {
+            if (selectedPiece) {
+                selectedPiece.classList.remove('selected');
+            }
+            selectedPiece = target;
+            selectedPiece.classList.add('selected');
+        }
+    }
+
+    // Move a piece
+    function movePiece(event) {
+        if (selectedPiece) {
+            const target = event.target;
+
+            // Ensure the move is made to an empty square
+            if (target.classList.contains('square') && !target.querySelector('.piece')) {
+                target.appendChild(selectedPiece);
+                selectedPiece.classList.remove('selected');
+                selectedPiece = null;
+            }
+        }
+    }
+
+    boardElement.addEventListener('click', selectPiece);
+    boardElement.addEventListener('click', movePiece);
+
+    // Initialize the board
+    createBoard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    .game-container {
+        text-align: center;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+    }
+    
+    input[type="number"] {
+        padding: 10px;
+        width: 100px;
+        margin: 10px 0;
+        font-size: 16px;
+    }
+    
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+    button:hover {
+        background-color: #45a049;
+    }
+    
+    #result {
+        margin-bottom: 15px;
+        font-size: 18px;
+        color: #333;
+    }
+    
+</style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Guess the Number Game</h1>
+        <p>Guess the number between 1 and 100!</p>
+        <div id="result"></div>
+        <input type="number" id="guess" placeholder="Enter a number" min="1" max="100">
+        <button id="submitGuess">Guess</button>
+        <button id="playAgain" style="display: none;">Play Again</button>
+    </div>
+
+    <script>
+        // Initialize the random number
+let randomNumber = Math.floor(Math.random() * 100) + 1;
+let attempts = 0;
+
+const submitGuessButton = document.getElementById('submitGuess');
+const guessInput = document.getElementById('guess');
+const resultDiv = document.getElementById('result');
+const playAgainButton = document.getElementById('playAgain');
+
+// Function to check the guess
+function checkGuess() {
+    const userGuess = parseInt(guessInput.value);
+    attempts++;
+
+    if (userGuess === randomNumber) {
+        resultDiv.textContent = `Congratulations! You guessed the number in ${attempts} attempts!`;
+        resultDiv.style.color = 'green';
+        submitGuessButton.disabled = true;
+        playAgainButton.style.display = 'inline-block';
+    } else if (userGuess < randomNumber) {
+        resultDiv.textContent = 'Too low! Try again.';
+        resultDiv.style.color = 'red';
+    } else {
+        resultDiv.textContent = 'Too high! Try again.';
+        resultDiv.style.color = 'red';
+    }
+
+    guessInput.value = '';
+}
+
+// Function to start a new game
+function playAgain() {
+    randomNumber = Math.floor(Math.random() * 100) + 1;
+    attempts = 0;
+    resultDiv.textContent = '';
+    guessInput.value = '';
+    submitGuessButton.disabled = false;
+    playAgainButton.style.display = 'none';
+}
+
+// Event listeners
+submitGuessButton.addEventListener('click', checkGuess);
+playAgainButton.addEventListener('click', playAgain);
+
+    </script>
+</body>
+</html>
